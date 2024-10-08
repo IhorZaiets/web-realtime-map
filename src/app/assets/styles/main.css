@@ -1,0 +1,8 @@
+@import 'config/setup.css';
+@import 'config/variables.css';
+
+body {
+  font-weight: var(--body-font-weight);
+  font-size: var(--body-font-size);
+  line-height: var(--body-line-height);
+}
