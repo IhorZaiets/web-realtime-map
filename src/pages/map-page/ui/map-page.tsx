@@ -1,5 +1,5 @@
 import { Map } from '@/features'
-import { MarkerItem, socket } from '@/shared'
+import { MarkerItem, socket, SOCKET_EVENTS } from '@/shared'
 import { mapStore } from '@/shared/store/mapStore'
 import { useEffect } from 'react'
 
@@ -9,10 +9,10 @@ const MapPage = () => {
   }
 
   useEffect(() => {
-    socket.on('map_items', handleReceiveMapItems)
+    socket.on(SOCKET_EVENTS.MAP_ITEMS, handleReceiveMapItems)
 
     return () => {
-      socket.off('map_items')
+      socket.off(SOCKET_EVENTS.MAP_ITEMS)
     }
   }, [])
 

@@ -1,4 +1,5 @@
 import { axiosInstance, routes } from '@/shared'
+import { SESSION_STORAGE } from '@/shared/types/storage'
 import CloseIcon from '@mui/icons-material/Close'
 import { IconButton, Snackbar, SnackbarCloseReason } from '@mui/material'
 import Box from '@mui/material/Box'
@@ -26,6 +27,8 @@ export default function LogInPage() {
         password,
       })
 
+      // placeholder in order not to implemet auth flow
+      sessionStorage.setItem(SESSION_STORAGE.IS_LOGGED_IN, 'true')
       navigate(routes.MAP, { replace: true })
     } catch (e) {
       console.error(e)

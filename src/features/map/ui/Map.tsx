@@ -5,10 +5,12 @@ import {
   DELETED_MARKER_ARROW,
 } from '@/shared/lib/createMarker'
 import { mapStore } from '@/shared/store/mapStore'
+import { SESSION_STORAGE } from '@/shared/types/storage'
 import * as maptilersdk from '@maptiler/sdk'
 import '@maptiler/sdk/dist/maptiler-sdk.css'
 import { observer } from 'mobx-react'
 import { FC, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getMarkersDifference } from '../lib/getMarkersDifference'
 import './map.css'
 
@@ -20,6 +22,8 @@ type Props = {
 }
 
 const Map: FC<Props> = observer(({ mapStore }) => {
+  const navigate = useNavigate()
+
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<maptilersdk.Map | null>(null)
   const markers = useRef<maptilersdk.Marker[] | null>(null)
@@ -29,6 +33,13 @@ const Map: FC<Props> = observer(({ mapStore }) => {
 
   // initialising map
   useEffect(() => {
+    const isLoggedIn = sessionStorage.getItem(SESSION_STORAGE.IS_LOGGED_IN)
+
+    if (!isLoggedIn) {
+      navigate('/')
+      return
+    }
+
     if (map.current) {
       return
     } // stops map from intializing more than once
@@ -40,7 +51,7 @@ const Map: FC<Props> = observer(({ mapStore }) => {
       center: [INITIAL_POSITION.lng, INITIAL_POSITION.lat],
       zoom: INITIAL_ZOOM,
     })
-  }, [])
+  }, [navigate])
 
   useEffect(() => {
     if (!map.current) {
@@ -113,7 +124,7 @@ const Map: FC<Props> = observer(({ mapStore }) => {
     )
 
     markers.current = [...markers.current, ...newMarkers]
-  }, [mapStore.mapMarkers])
+  }, [mapStore.mapMarkers, navigate])
 
   return (
     <div className="map-wrap">
