@@ -17,6 +17,9 @@ import './map.css'
 const INITIAL_POSITION = { lng: 139.793, lat: 35.6844 }
 const INITIAL_ZOOM = 13
 
+const NUMBER_OF_MINUTES_TO_REMOVE = 5
+const MINUTE_IN_MILISECONDS = 60000
+
 type Props = {
   mapStore: typeof mapStore
 }
@@ -90,7 +93,7 @@ const Map: FC<Props> = observer(({ mapStore }) => {
             markers.current = (markers.current || []).filter(
               (i) => i._element.id !== currentValue._element.id,
             )
-          }, 3000),
+          }, NUMBER_OF_MINUTES_TO_REMOVE * MINUTE_IN_MILISECONDS),
         }
       },
       {},
