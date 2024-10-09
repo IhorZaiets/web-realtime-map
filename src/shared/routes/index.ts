@@ -1,4 +1,4 @@
 export const routes = {
-  LOGIN: '',
+  LOGIN: '*',
   MAP: '/map',
 }

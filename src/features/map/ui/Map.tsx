@@ -1,3 +1,4 @@
+import { socket } from '@/shared'
 import {
   createMarker,
   DEFAULT_MARKER_ARROW,
@@ -11,8 +12,8 @@ import { FC, useEffect, useRef } from 'react'
 import { getMarkersDifference } from '../lib/getMarkersDifference'
 import './map.css'
 
-const INITIAL_POSITION = { lng: 139.753, lat: 35.6844 }
-const INITIAL_ZOOM = 14
+const INITIAL_POSITION = { lng: 139.793, lat: 35.6844 }
+const INITIAL_ZOOM = 13
 
 type Props = {
   mapStore: typeof mapStore
@@ -26,10 +27,12 @@ const Map: FC<Props> = observer(({ mapStore }) => {
 
   maptilersdk.config.apiKey = import.meta.env.VITE_MAPTILER_API_KEY
 
+  // initialising map
   useEffect(() => {
     if (map.current) {
       return
     } // stops map from intializing more than once
+    socket.connect()
 
     map.current = new maptilersdk.Map({
       container: mapContainer.current as HTMLDivElement,
@@ -57,18 +60,20 @@ const Map: FC<Props> = observer(({ mapStore }) => {
       return
     }
 
-    const { markersToAdd, markersToRemove, markersToStay } =
+    const { markersToAdd, markersToRemove, markersToStay, newMakersObj } =
       getMarkersDifference(markers.current, mapStore.mapMarkers)
 
     // deleting markers
     markersToRemove.map(
       (item) => (item._element.style.backgroundImage = DELETED_MARKER_ARROW),
     )
+    // we save timer ids in order to cancel timer if in next request we receive this marker
     const newRemovingMarkersTimeoutsIds = markersToRemove.reduce(
       (previousValue, currentValue) => {
         return {
           ...previousValue,
           [currentValue._element.id]: setTimeout(() => {
+            // clearing marker from all possible places
             currentValue.remove()
             delete removingMarkersTimeoutsIds.current[currentValue._element.id]
             markers.current = (markers.current || []).filter(
@@ -84,8 +89,14 @@ const Map: FC<Props> = observer(({ mapStore }) => {
       ...newRemovingMarkersTimeoutsIds,
     }
 
-    // make sure that we will not delete markers that we received from BE
     markersToStay.forEach((item) => {
+      // moving our markers
+      item.setLngLat([
+        newMakersObj[item._element.id].coords.lng,
+        newMakersObj[item._element.id].coords.lat,
+      ])
+
+      // make sure that we will not delete markers that we received from BE
       item._element.style.backgroundImage = DEFAULT_MARKER_ARROW
       clearTimeout(removingMarkersTimeoutsIds.current[item._element.id])
       delete removingMarkersTimeoutsIds.current[item._element.id]

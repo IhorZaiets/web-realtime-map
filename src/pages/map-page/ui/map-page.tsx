@@ -6,7 +6,6 @@ import { useEffect } from 'react'
 const MapPage = () => {
   const handleReceiveMapItems = (value: MarkerItem[]) => {
     mapStore.setMapMarkers(value)
-    console.log(value)
   }
 
   useEffect(() => {

@@ -32,5 +32,5 @@ export const getMarkersDifference = (
     (item) => newMakersObj[item._element.id],
   )
 
-  return { markersToRemove, markersToAdd, markersToStay }
+  return { markersToRemove, markersToAdd, markersToStay, newMakersObj }
 }
