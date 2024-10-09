@@ -1,5 +1,9 @@
 import * as maptilersdk from '@maptiler/sdk'
 
+export const DEFAULT_MARKER_ARROW = 'url(src/app/assets/images/arrow.png)'
+export const DELETED_MARKER_ARROW =
+  'url(src/app/assets/images/arrowMissing.png)'
+
 export const createMarker = (
   lngLat: maptilersdk.LngLatLike,
   id: number,
@@ -9,7 +13,7 @@ export const createMarker = (
   const el = document.createElement('div')
   el.className = 'marker'
   el.id = id.toString()
-  el.style.backgroundImage = 'url(src/app/assets/images/arrow.png)'
+  el.style.backgroundImage = DEFAULT_MARKER_ARROW
   el.style.backgroundRepeat = 'no-repeat'
   el.style.width = '30px'
   el.style.height = '30px'

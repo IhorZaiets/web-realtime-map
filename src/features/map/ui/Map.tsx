@@ -1,4 +1,8 @@
-import { createMarker } from '@/shared/lib/createMarker'
+import {
+  createMarker,
+  DEFAULT_MARKER_ARROW,
+  DELETED_MARKER_ARROW,
+} from '@/shared/lib/createMarker'
 import { mapStore } from '@/shared/store/mapStore'
 import * as maptilersdk from '@maptiler/sdk'
 import '@maptiler/sdk/dist/maptiler-sdk.css'
@@ -18,6 +22,7 @@ const Map: FC<Props> = observer(({ mapStore }) => {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<maptilersdk.Map | null>(null)
   const markers = useRef<maptilersdk.Marker[] | null>(null)
+  const removingMarkersTimeoutsIds = useRef<{ [markerId: string]: string }>({})
 
   maptilersdk.config.apiKey = import.meta.env.VITE_MAPTILER_API_KEY
 
@@ -52,21 +57,41 @@ const Map: FC<Props> = observer(({ mapStore }) => {
       return
     }
 
-    const { markersToAdd, markersToRemove, markersToRemoveObg } =
+    const { markersToAdd, markersToRemove, markersToStay } =
       getMarkersDifference(markers.current, mapStore.mapMarkers)
 
+    // deleting markers
     markersToRemove.map(
-      (item) =>
-        (item._element.style.backgroundImage =
-          'url(src/app/assets/images/arrowMissing.png)'),
+      (item) => (item._element.style.backgroundImage = DELETED_MARKER_ARROW),
     )
-    setTimeout(() => {
-      markersToRemove.map((item) => item.remove())
-      markers.current = (markers.current || []).filter(
-        (item) => !markersToRemoveObg[item._element.id],
-      )
-    }, 500)
+    const newRemovingMarkersTimeoutsIds = markersToRemove.reduce(
+      (previousValue, currentValue) => {
+        return {
+          ...previousValue,
+          [currentValue._element.id]: setTimeout(() => {
+            currentValue.remove()
+            delete removingMarkersTimeoutsIds.current[currentValue._element.id]
+            markers.current = (markers.current || []).filter(
+              (i) => i._element.id !== currentValue._element.id,
+            )
+          }, 3000),
+        }
+      },
+      {},
+    )
+    removingMarkersTimeoutsIds.current = {
+      ...removingMarkersTimeoutsIds.current,
+      ...newRemovingMarkersTimeoutsIds,
+    }
 
+    // make sure that we will not delete markers that we received from BE
+    markersToStay.forEach((item) => {
+      item._element.style.backgroundImage = DEFAULT_MARKER_ARROW
+      clearTimeout(removingMarkersTimeoutsIds.current[item._element.id])
+      delete removingMarkersTimeoutsIds.current[item._element.id]
+    })
+
+    // adding new markers to the map
     const newMarkers = markersToAdd.map((item) =>
       createMarker(
         [item.coords.lng, item.coords.lat],
