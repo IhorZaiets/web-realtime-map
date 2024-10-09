@@ -28,6 +28,10 @@ export default defineConfig(({ mode }) => {
       open: true,
       https: false,
       host: true,
+      port: 5173
+    },
+    preview: {
+      port: 5173
     },
   }
 })

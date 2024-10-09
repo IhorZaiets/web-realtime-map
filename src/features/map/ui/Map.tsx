@@ -1,8 +1,8 @@
 import { socket } from '@/shared'
 import {
   createMarker,
-  DEFAULT_MARKER_ARROW,
-  DELETED_MARKER_ARROW,
+  DEFAULT_MARKER_BACKGROUND_COLOR,
+  DELETED_MARKER_BACKGROUND_COLOR,
 } from '@/shared/lib/createMarker'
 import { mapStore } from '@/shared/store/mapStore'
 import { SESSION_STORAGE } from '@/shared/types/storage'
@@ -79,7 +79,8 @@ const Map: FC<Props> = observer(({ mapStore }) => {
 
     // deleting markers
     markersToRemove.map(
-      (item) => (item._element.style.backgroundImage = DELETED_MARKER_ARROW),
+      (item) =>
+        (item._element.style.backgroundColor = DELETED_MARKER_BACKGROUND_COLOR),
     )
     // we save timer ids in order to cancel timer if in next request we receive this marker
     const newRemovingMarkersTimeoutsIds = markersToRemove.reduce(
@@ -111,7 +112,7 @@ const Map: FC<Props> = observer(({ mapStore }) => {
       ])
 
       // make sure that we will not delete markers that we received from BE
-      item._element.style.backgroundImage = DEFAULT_MARKER_ARROW
+      item._element.style.backgroundColor = DEFAULT_MARKER_BACKGROUND_COLOR
       clearTimeout(removingMarkersTimeoutsIds.current[item._element.id])
       delete removingMarkersTimeoutsIds.current[item._element.id]
     })
