@@ -1,8 +1,21 @@
-# React + Vite
+# Realtime map
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is realtime map, which worls with [be-realtime-map](https://github.com/IhorZaiets/be-realtime-map/blob/main/README.md).
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This web uses such technologies as:
+- vite
+- typescript
+- react
+- mui
+- yup
+- formik
+- mobx
+- maptiler
+- socket.io
+
+In order to run this server, you will need:
+```
+npm i - to install dependencies
+npm run dev - start development server
+```
